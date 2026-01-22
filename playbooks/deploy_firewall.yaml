@@ -1,0 +1,19 @@
+---
+# Playbook: Deploy Firewall VNF
+- name: Déploiement du VNF Firewall
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  tasks:
+    - name: Lancer le conteneur Firewall
+      command: >
+        docker run -d 
+        --name vnf-firewall 
+        --hostname vnf-firewall
+        --network net8552-chain
+        -p 8080:80
+        -v "{{ playbook_dir }}/../configs/firewall/nginx.conf:/etc/nginx/nginx.conf:ro"
+        nginx:alpine
+      register: result
+      changed_when: result.rc == 0

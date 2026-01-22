@@ -1,0 +1,20 @@
+---
+# Playbook: Deploy Web Server VNF
+- name: Déploiement du VNF Web Server
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  tasks:
+    - name: Lancer le conteneur Web Server
+      command: >
+        docker run -d 
+        --name vnf-web 
+        --hostname vnf-web
+        --network net8552-chain
+        -p 8081:80
+        -v "{{ playbook_dir }}/../configs/webserver/index.html:/usr/share/nginx/html/index.html:ro"
+        -v "{{ playbook_dir }}/../configs/webserver/style.css:/usr/share/nginx/html/style.css:ro"
+        nginx:alpine
+      register: result
+      changed_when: result.rc == 0

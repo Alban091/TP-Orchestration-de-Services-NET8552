@@ -1,0 +1,139 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# TOSCA Service Template - Network Service Chain
+# NET8552 - Télécom SudParis
+# ═══════════════════════════════════════════════════════════════════════════════
+
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+description: >
+  Modèle TOSCA décrivant une chaîne de services réseau virtualisés (VNF).
+  Architecture: Client → Firewall → Load Balancer → Web Server
+  
+  Note: Ce fichier sert de spécification déclarative de l'architecture.
+  Le déploiement est effectué via Docker Compose (compatible ARM64/Apple Silicon).
+
+metadata:
+  template_name: net8552-service-chain
+  template_author: Télécom SudParis
+  template_version: "2.0.0"
+  target_platform: macOS-ARM64-AppleSilicon
+  course: NET8552 - Orchestration de Services Réseau
+  academic_year: "2025-2026"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Topology Template
+# ─────────────────────────────────────────────────────────────────────────────
+topology_template:
+  description: Chaîne de fonctions réseau virtualisées
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Input Parameters
+  # ───────────────────────────────────────────────────────────────────────────
+  inputs:
+    firewall_port:
+      type: integer
+      description: Port d'entrée du firewall (point d'entrée de la chaîne)
+      default: 8080
+    
+    loadbalancer_port:
+      type: integer
+      description: Port du load balancer
+      default: 9090
+    
+    webserver_port:
+      type: integer
+      description: Port du serveur web
+      default: 8081
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Node Templates (VNFs)
+  # ───────────────────────────────────────────────────────────────────────────
+  node_templates:
+    
+    # VNF 3: Web Server (Backend)
+    WebServer:
+      type: tosca.nodes.Container.Application
+      description: Serveur web Nginx servant le contenu statique
+      properties:
+        name: vnf-web
+        image: nginx:alpine
+        tag: latest
+      capabilities:
+        http_endpoint:
+          properties:
+            protocol: http
+            port: { get_input: webserver_port }
+            url_path: /
+      artifacts:
+        html_content:
+          type: tosca.artifacts.File
+          file: configs/webserver/index.html
+        css_content:
+          type: tosca.artifacts.File
+          file: configs/webserver/style.css
+
+    # VNF 2: Load Balancer (Middle Layer)
+    LoadBalancer:
+      type: tosca.nodes.Container.Application
+      description: HAProxy pour la répartition de charge
+      properties:
+        name: vnf-lb
+        image: haproxytech/haproxy-alpine
+        tag: latest
+      requirements:
+        - dependency: WebServer
+      capabilities:
+        http_endpoint:
+          properties:
+            protocol: http
+            port: { get_input: loadbalancer_port }
+        stats_endpoint:
+          properties:
+            protocol: http
+            port: 8404
+            url_path: /stats
+      artifacts:
+        haproxy_config:
+          type: tosca.artifacts.File
+          file: configs/loadbalancer/haproxy.cfg
+
+    # VNF 1: Firewall (Entry Point)
+    Firewall:
+      type: tosca.nodes.Container.Application
+      description: Nginx configuré comme firewall applicatif
+      properties:
+        name: vnf-firewall
+        image: nginx:alpine
+        tag: latest
+      requirements:
+        - dependency: LoadBalancer
+      capabilities:
+        http_endpoint:
+          properties:
+            protocol: http
+            port: { get_input: firewall_port }
+            url_path: /
+      artifacts:
+        nginx_config:
+          type: tosca.artifacts.File
+          file: configs/firewall/nginx.conf
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Output Values
+  # ───────────────────────────────────────────────────────────────────────────
+  outputs:
+    chain_entry_url:
+      description: URL d'entrée de la chaîne de services (via Firewall)
+      value: { concat: ['http://localhost:', { get_input: firewall_port }] }
+    
+    loadbalancer_url:
+      description: URL directe du Load Balancer
+      value: { concat: ['http://localhost:', { get_input: loadbalancer_port }] }
+    
+    webserver_url:
+      description: URL directe du Web Server
+      value: { concat: ['http://localhost:', { get_input: webserver_port }] }
+    
+    stats_url:
+      description: URL du dashboard HAProxy Stats
+      value: "http://localhost:8404/stats"

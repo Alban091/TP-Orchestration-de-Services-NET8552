@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NET8552 | Service Chain</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">NET<span class="accent">8552</span></span>
+            </div>
+            <div class="status-badge">
+                <span class="pulse"></span>
+                OPERATIONAL
+            </div>
+        </header>
+
+        <main class="main">
+            <h1 class="title">
+                <span class="title-line">NETWORK</span>
+                <span class="title-line accent">SERVICE CHAIN</span>
+            </h1>
+            
+            <p class="subtitle">Orchestration de Fonctions Réseau Virtualisées</p>
+
+            <div class="chain-container">
+                <div class="chain">
+                    <div class="vnf-card" data-vnf="firewall">
+                        <div class="vnf-glow"></div>
+                        <div class="vnf-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="vnf-info">
+                            <h3>FIREWALL</h3>
+                            <span class="vnf-tech">nginx:alpine</span>
+                            <span class="vnf-port">:8080</span>
+                        </div>
+                        <div class="vnf-status active"></div>
+                    </div>
+
+                    <div class="chain-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-head">›</div>
+                        <div class="arrow-particles">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <div class="vnf-card" data-vnf="loadbalancer">
+                        <div class="vnf-glow"></div>
+                        <div class="vnf-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v12M6 12h12"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="vnf-info">
+                            <h3>LOAD BALANCER</h3>
+                            <span class="vnf-tech">haproxy</span>
+                            <span class="vnf-port">:9090</span>
+                        </div>
+                        <div class="vnf-status active"></div>
+                    </div>
+
+                    <div class="chain-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-head">›</div>
+                        <div class="arrow-particles">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <div class="vnf-card" data-vnf="webserver">
+                        <div class="vnf-glow"></div>
+                        <div class="vnf-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 21h8M12 17v4"/>
+                                <circle cx="12" cy="10" r="2"/>
+                            </svg>
+                        </div>
+                        <div class="vnf-info">
+                            <h3>WEB SERVER</h3>
+                            <span class="vnf-tech">nginx:alpine</span>
+                            <span class="vnf-port">:8081</span>
+                        </div>
+                        <div class="vnf-status active"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">ARCHITECTURE</div>
+                    <div class="info-value">Apple Silicon M1</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">ORCHESTRATION</div>
+                    <div class="info-value">Docker Compose + TOSCA</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">WORKFLOW</div>
+                    <div class="info-value">BPMN / Camunda</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">NETWORK</div>
+                    <div class="info-value">172.28.0.0/16</div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="school">TÉLÉCOM SUDPARIS</span>
+                <span class="separator">•</span>
+                <span class="course">Département Informatique & Réseaux</span>
+            </div>
+            <div class="footer-right">
+                <span class="year">2025—2026</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Animation des particules dans les flèches
+        document.querySelectorAll('.arrow-particles span').forEach((particle, i) => {
+            particle.style.animationDelay = `${i * 0.3}s`;
+        });
+
+        // Animation au survol des cartes VNF
+        document.querySelectorAll('.vnf-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.querySelector('.vnf-glow').style.opacity = '1';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('.vnf-glow').style.opacity = '0';
+            });
+        });
+
+        // Effet de typing pour le titre
+        const title = document.querySelector('.title');
+        title.style.opacity = '1';
+    </script>
+</body>
+</html>

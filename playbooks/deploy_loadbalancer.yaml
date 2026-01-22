@@ -1,0 +1,20 @@
+---
+# Playbook: Deploy Load Balancer VNF
+- name: Déploiement du VNF Load Balancer
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  tasks:
+    - name: Lancer le conteneur Load Balancer
+      command: >
+        docker run -d 
+        --name vnf-lb 
+        --hostname vnf-lb
+        --network net8552-chain
+        -p 9090:80
+        -p 8404:8404
+        -v "{{ playbook_dir }}/../configs/loadbalancer/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+        haproxytech/haproxy-alpine:latest
+      register: result
+      changed_when: result.rc == 0
