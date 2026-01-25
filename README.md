@@ -23,14 +23,17 @@
 ## 🚀 Démarrage Rapide
 
 ```bash
-# Démarrer
-./scripts/start.sh
+# Démarrer les services
+docker-compose up -d
 
-# Tester
-./scripts/test.sh
+# Vérifier l'état des conteneurs
+docker ps
 
-# Arrêter
-./scripts/stop.sh
+# Voir les logs
+docker-compose logs -f
+
+# Arrêter les services
+docker-compose down
 ```
 
 ## 🌐 Points d'accès
@@ -48,24 +51,15 @@
 network-orchestration/
 ├── docker-compose.yml          # Configuration Docker
 ├── service-chain.yaml          # Modèle TOSCA
-├── configs/
-│   ├── firewall/
-│   │   └── nginx.conf          # Config Firewall
-│   ├── loadbalancer/
-│   │   └── haproxy.cfg         # Config HAProxy
-│   └── webserver/
-│       ├── index.html          # Page web
-│       └── style.css           # Styles
+├── network-service-chain.bpmn  # Workflow BPMN
 ├── playbooks/
 │   ├── deploy_firewall.yaml
 │   ├── deploy_loadbalancer.yaml
 │   └── deploy_webserver.yaml
-├── scripts/
-│   ├── start.sh
-│   ├── stop.sh
-│   ├── test.sh
-│   └── logs.sh
 └── screenshots/
+    ├── docker_ps.png
+    ├── curl_tests.png
+    └── workflow_bpmn.png
 ```
 
 ## 🧪 Tests
@@ -73,6 +67,12 @@ network-orchestration/
 ```bash
 # Test de la chaîne complète
 curl http://localhost:8080
+
+# Test du Load Balancer
+curl http://localhost:9090
+
+# Test du Web Server direct
+curl http://localhost:8081
 
 # Test du blocage firewall
 curl -A "BadBot/1.0" http://localhost:8080  # → 403 Forbidden
@@ -83,16 +83,13 @@ curl -I http://localhost:8080
 
 ## 🎨 Workflow BPMN
 
-1. Ouvrir **Camunda Modeler**
-2. Créer un nouveau diagramme BPMN
-3. Ajouter les éléments:
-   - ⚪ Start Event
-   - 📦 Service Task: Deploy Web Server
-   - 📦 Service Task: Deploy Load Balancer
-   - 📦 Service Task: Deploy Firewall
-   - 📦 Service Task: Test Connectivity
-   - ⚫ End Event
-4. Sauvegarder: `network-service-chain.bpmn`
+Le fichier `network-service-chain.bpmn` contient le workflow de déploiement :
+
+```
+⚪ Start → [Deploy Web Server] → [Deploy Load Balancer] → [Deploy Firewall] → [Test Network Flow] → ⚫ End
+```
+
+Pour visualiser : ouvrir avec **Camunda Modeler**
 
 ## 📝 Note sur xOpera
 
